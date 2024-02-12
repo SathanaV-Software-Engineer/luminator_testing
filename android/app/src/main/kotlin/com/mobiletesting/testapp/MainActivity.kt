@@ -1,4 +1,4 @@
-package com.schnell.flutterlumin.luminator
+package com.mobiletesting.testapp
 
 import io.flutter.embedding.android.FlutterActivity
 
