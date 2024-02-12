@@ -1,0 +1,4 @@
+storePassword=testapp
+keyPassword=testapp
+keyAlias=com.mobiletesting.testapp
+storeFile=testApp.jks
