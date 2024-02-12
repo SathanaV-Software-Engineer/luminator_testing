@@ -1,4 +1,4 @@
-package com.schnell.smartlights.luminator
+package com.schnell.flutterlumin.luminator
 
 import io.flutter.embedding.android.FlutterActivity
 

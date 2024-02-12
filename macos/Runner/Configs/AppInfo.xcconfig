@@ -8,7 +8,7 @@
 PRODUCT_NAME = luminator
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.schnell.smartlights.luminator
+PRODUCT_BUNDLE_IDENTIFIER = com.schnell.flutterlumin.luminator
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.schnell.smartlights. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 com.schnell.flutterlumin. All rights reserved.

@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.schnell.smartlights" "\0"
+            VALUE "CompanyName", "com.schnell.flutterlumin" "\0"
             VALUE "FileDescription", "luminator" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "luminator" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.schnell.smartlights. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 com.schnell.flutterlumin. All rights reserved." "\0"
             VALUE "OriginalFilename", "luminator.exe" "\0"
             VALUE "ProductName", "luminator" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
