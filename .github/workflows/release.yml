@@ -38,5 +38,5 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.mobiletesting.testapp
-          releaseFile: app-release.aab
+          releaseFiles: app-release.aab
           track: internal
