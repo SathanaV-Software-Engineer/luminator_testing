@@ -29,10 +29,19 @@ jobs:
             console.log('Asset details:', assetDetails.browser_download_url);
             
             // Set the assetDetails as an output
-            const assetDetailsJson = JSON.stringify(assetDetails);
-            console.log('Asset details JSON:', assetDetailsJson);
             console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
 
-      - name: Print Asset Details
-        run: |
-          echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails }}"
+      - name: Upload in Plystore
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ steps.latest_release.outputs.assetDetails }}
+          path: /tmp/aab
+
+      - name: Release app to internal track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: com.mobiletesting.testapp
+          releaseFile: /tmp/aab/app-release.aab
+          track: internal
+          whatsNewText: ${{ github.event.inputs.release_notes }}
