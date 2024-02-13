@@ -8,22 +8,19 @@ on:
         required: true
 
 jobs:
-  determine_trigger_branch_or_tags:
+  determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Get Tag Name and AAB File Paths
+      - name: Print Trigger Information
         run: |
-            echo "Ref: ${github.ref}"
-            if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
-              tag_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $NF}')
-              echo "Tag Name: ${tag_name}"
-              
-        
-              # Perform further operations using the AAB file path
-              # For example, you can use this path in your workflow steps
-            else
-              echo "The trigger is not a tag."
-            fi
+          # Extract the last segment of the ref, which corresponds to the branch or tag name
+          ref_segment=$(echo "${{ github.ref }}" | awk -F'/' '{print $NF}')
+          # Check if the ref_segment starts with 'refs/tags/'
+          if [[ "${ref_segment}" == "refs/tags/"* ]]; then
+            # If it does, then it's a tag
+            tag_name="${ref_segment#"refs/tags/"}"
+            echo "Triggered by tag: ${tag_name}"
+          else
+            # Otherwise, it's a branch
+            echo "Triggered by branch: ${ref_segment}"
+          fi
