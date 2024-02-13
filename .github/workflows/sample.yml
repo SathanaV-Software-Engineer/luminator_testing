@@ -14,14 +14,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Get Tag Name and AAB File Path
+      - name: Get Tag Name and AAB File Paths
         run: |
             echo "Ref: ${github.ref}"
             if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
               tag_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $NF}')
               echo "Tag Name: ${tag_name}"
-              aab_file_path="path/to/your/aab/files/${tag_name}/app-release.aab"
-              echo "AAB file path: ${aab_file_path}"
+              
         
               # Perform further operations using the AAB file path
               # For example, you can use this path in your workflow steps
