@@ -13,4 +13,4 @@ jobs:
 
     steps:
     - name: Print Hello
-      run: echo "Hello ${{ toJson(github.event.inputs)}}"
+      run: echo "Hello  ${{ github.ref }}"
