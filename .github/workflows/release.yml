@@ -35,5 +35,5 @@ jobs:
 
       - name: Print Asset Details
         run: |
+          echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails }}"
           echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails.browser_download_url }}"
-      
