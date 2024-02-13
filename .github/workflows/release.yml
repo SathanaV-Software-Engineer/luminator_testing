@@ -26,14 +26,13 @@ jobs:
             // Extract the asset details of the AAB file from the latest release
             const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
 
-            console.log('Asset details:', assetDetails);
+            console.log('Asset details:', assetDetails.browser_download_url);
             
             // Set the assetDetails as an output
             const assetDetailsJson = JSON.stringify(assetDetails);
             console.log('Asset details JSON:', assetDetailsJson);
-            console.log(`::set-output name=assetDetails::${assetDetailsJson}`);
+            console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
 
       - name: Print Asset Details
         run: |
           echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails }}"
-          echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails.browser_download_url }}"
