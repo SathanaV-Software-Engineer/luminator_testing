@@ -29,8 +29,10 @@ jobs:
             console.log('Asset details:', assetDetails);
 
             // Set the assetDetails as an output
-            return { assetDetails: JSON.stringify(assetDetails) };
+            const assetDetailsJson = JSON.stringify(assetDetails);
+            console.log('Asset details JSON:', assetDetailsJson);
+            console.log(`::set-output name=assetDetails::${assetDetailsJson}`);
 
       - name: Print Asset Details
         run: |
-          echo "Asset Details: ${{ fromJson(steps.latest_release.outputs.assetDetails) }}"
+          echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails }}"
