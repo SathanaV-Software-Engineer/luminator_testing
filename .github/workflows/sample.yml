@@ -1,4 +1,4 @@
-name: Manual Trigger new
+name: Manual Trigger new now
 
 on:
   workflow_dispatch: # Manually trigger this workflow
@@ -8,7 +8,7 @@ on:
           required: true
 
 jobs:
-  determine_trigger_branch_or_tag:
+  determine_trigger_branch_or_tags:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
