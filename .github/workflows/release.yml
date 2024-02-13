@@ -27,7 +27,7 @@ jobs:
             const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
 
             console.log('Asset details:', assetDetails);
-            action_state=yellow" >> "$GITHUB_ENV"
+            
             // Set the assetDetails as an output
             const assetDetailsJson = JSON.stringify(assetDetails);
             console.log('Asset details JSON:', assetDetailsJson);
@@ -36,7 +36,4 @@ jobs:
       - name: Print Asset Details
         run: |
           echo "Asset Details: ${{ steps.latest_release.outputs.assetDetails }}"
-      - name: Use the value
-        id: step_two
-        run: |
-          printf '%s\n' "$action_state" # This will output 'yellow'
+      
