@@ -23,9 +23,21 @@ jobs:
             console.log('Latest release:', response.data);
 
             // Extract the asset ID of the AAB file from the latest release
-            const assetId = response.data.assets.find(asset => asset.name === 'app-release.aab').id;
+            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
 
-            console.log('Asset ID:', assetId);
+            console.log('Asset ID:', assetDetails.assetId);
 
             // You can use the asset ID to download the AAB file
             // For example, you can use curl or wget to download the file
+      - name: Download AAB from URL
+        run: |
+          wget -O app-release.aab assetDetails.browser_download_url
+    # Adjust <your-download-url> with the actual URL provided
+      - name: Release app to internal track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: com.fluttercicddemo
+          releaseFile: app-release.aab
+          track: internal
+          whatsNewText: ${{ github.event.inputs.release_notes }}
