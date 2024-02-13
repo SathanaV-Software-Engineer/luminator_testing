@@ -2,6 +2,11 @@ name: Manual Trigger
 
 on:
   workflow_dispatch: # Manually trigger this workflow
+     inputs:
+        release_notes:
+          description: 'Release Notes'
+          required: false
+          default: 'No release notes provided'
 
 jobs:
   print_hello:
