@@ -1,0 +1,45 @@
+name: Release in Play Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release Notes'
+        required: true
+
+jobs:
+  determine_trigger_branch_or_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest release info
+        id: latest_release
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const response = await github.rest.repos.getLatestRelease({
+              owner: 'SathanaV-Software-Engineer',
+              repo: 'luminator_testing'
+            });
+
+            console.log('Latest release:', response.data);
+
+            // Extract the asset details of the AAB file from the latest release
+            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
+
+            console.log('Asset details:', assetDetails);
+
+            // Set the assetDetails as an output
+            return assetDetails;
+
+      - name: Download AAB from URL
+        run: |
+          wget -O app-release.aab "${{ steps.latest_release.outputs.assetDetails.browser_download_url }}"
+
+      - name: Release app to internal track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: com.mobiletesting.testapp
+          releaseFile: app-release.aab
+          track: internal
+          whatsNewText: ${{ github.event.inputs.release_notes }}
