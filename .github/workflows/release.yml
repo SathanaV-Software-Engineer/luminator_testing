@@ -30,11 +30,13 @@ jobs:
             
             // Set the assetDetails as an output
             console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
-
+      - name: Download release file
+        run: |
+          wget -O app-release.aab "${{ steps.latest_release.outputs.assetDetails }}"
       - name: Release app to internal track
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.mobiletesting.testapp
-          releaseFile: ${{ steps.latest_release.outputs.assetDetails }}
+          releaseFile: app-release.aab
           track: internal
