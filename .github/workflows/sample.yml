@@ -1,11 +1,11 @@
-name: Manual Trigger new now
+name: Manual Trigger new now testing
 
 on:
-  workflow_dispatch: # Manually trigger this workflow
-     inputs:
-        release_notes:
-          description: 'Release Notes'
-          required: true
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release Notes'
+        required: true
 
 jobs:
   determine_trigger_branch_or_tags:
@@ -14,13 +14,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Get Tag Name
+      - name: Get Tag Name and AAB File Path
         run: |
-          # Extract the last segment of the ref, which corresponds to the tag name
-          tag_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $NF}')
-
-          # If the ref is a tag, construct the path to the AAB file
           if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
+            tag_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $NF}')
             aab_file_path="path/to/your/aab/files/${tag_name}/app-release.aab"
             echo "AAB file path: ${aab_file_path}"
 
