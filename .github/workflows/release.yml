@@ -31,17 +31,11 @@ jobs:
             // Set the assetDetails as an output
             console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
 
-      - name: Upload in Plystore
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ steps.latest_release.outputs.assetDetails }}
-          path: /tmp/aab
-
       - name: Release app to internal track
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.mobiletesting.testapp
-          releaseFile: /tmp/aab/app-release.aab
+          releaseFile: ${{ steps.latest_release.outputs.assetDetails }}
           track: internal
           whatsNewText: ${{ github.event.inputs.release_notes }}
