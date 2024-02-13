@@ -1,16 +1,31 @@
-name: Manual Trigger
+name: Release to Play Store
 
 on:
-  workflow_dispatch: # Manually trigger this workflow
-     inputs:
-        release_notes:
-          description: 'Release Notes'
-          required: true
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag name'
+        required: true
 
 jobs:
-  print_hello:
+  release_to_play_store:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Print Hello
-      run: echo "Hello ${{ github.event.release.tag_name }}"
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Other build and setup steps...
+
+      - name: Extract Release Notes
+        id: release_notes
+        run: |
+          release_notes=$(git show -s --format=%b ${{ github.event.inputs.tag_name }} | sed -n 's/^.*\(Release Notes:.*\).*$/\1/p')
+          echo "::set-output name=release_notes::$release_notes"
+
+      - name: Get AAB File Path
+        id: get_aab_path
+        run: |
+          tag_name=${{ github.event.inputs.tag_name }}
+          aab_file_path=$(git ls-tree --name-only ${{ github.sha }} | grep "$tag_name/app-release.aab" | head -n 1)
+          echo "::set-output name=aab_file_path::$aab_file_path"
