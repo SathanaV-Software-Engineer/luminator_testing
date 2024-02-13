@@ -29,9 +29,8 @@ jobs:
             console.log('Asset details:', assetDetails);
 
             // Set the assetDetails as an output
-            return assetDetails;
+            console.log('::set-output name=assetDetails::${{ JSON.stringify(assetDetails) }}');
 
-      - name: Download AAB from URL
+      - name: Print Asset Details
         run: |
           echo "Asset Details: ${{ toJson(steps.latest_release.outputs.assetDetails) }}"
-
