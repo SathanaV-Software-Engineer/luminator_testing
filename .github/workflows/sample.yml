@@ -5,8 +5,7 @@ on:
      inputs:
         release_notes:
           description: 'Release Notes'
-          required: false
-          default: 'No release notes provided'
+          required: true
 
 jobs:
   print_hello:
