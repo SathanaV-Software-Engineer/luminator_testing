@@ -4,42 +4,65 @@ on:
   workflow_dispatch:
     inputs:
       release_notes:
-        description: 'Release Notes'
+        description: 'Release Notes new'
         required: true
 
 jobs:
-  determine_trigger_branch_or_tag:
-    runs-on: ubuntu-latest
+  # Define a job named 'build'
+  build:
+    # Give the job a name
+    name: Build & Release
+    # Specify the operating system on which the job runs
+    runs-on: macos-latest
+
+    # Define the steps to be executed in this job
     steps:
-      - name: Get latest release info
-        id: latest_release
-        uses: actions/github-script@v5
+      # Step 1: Checkout Repository
+      - name: Checkout Repository
+        # Use the latest version of the checkout action to fetch the repository's code
+        uses: actions/checkout@v1
+
+      # Step 2: Set Up Java
+      - name: Set Up Java
+        # Use the latest version of the setup-java action to set up Java
+        uses: actions/setup-java@v1
         with:
-          script: |
-            const response = await github.rest.repos.getLatestRelease({
-              owner: 'SathanaV-Software-Engineer',
-              repo: 'luminator_testing'
-            });
+          java-version: '12.x'
 
-            console.log('Latest release:', response.data);
-
-            // Extract the asset details of the AAB file from the latest release
-            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
-
-            console.log('Asset details:', assetDetails);
-
-            // Set the assetDetails as an output
-            return assetDetails;
-
-      - name: Download AAB from URL
-        run: |
-          wget -O app-release.aab "${{ steps.latest_release.outputs.assetDetails.browser_download_url }}"
-
-      - name: Release app to internal track
-        uses: r0adkll/upload-google-play@v1
+      # Step 3: Set Up Flutter
+      - name: Set Up Flutter
+        # Use the latest version of the flutter-action to set up Flutter
+        uses: subosito/flutter-action@v1
         with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
-          packageName: com.mobiletesting.testapp
-          releaseFile: app-release.aab
-          track: internal
-          whatsNewText: ${{ github.event.inputs.release_notes }}
+          flutter-version: '3.16.3'
+
+      # Step 4: Install Dependencies
+      - name: Install Dependencies
+        # Run the command to fetch Flutter dependencies
+        run: flutter pub get
+
+      # Step 5: Test Flutter app
+      - name: Test Flutter app
+        # Run tests for the Flutter app
+        run: flutter test
+
+      # Step 6: Build APK
+      - name: Build APK
+        # Build the APK for the Flutter app
+        run: flutter build apk --release
+
+      # Step 7: Build App Bundle
+      - name: Build App Bundle
+        # Build the app bundle for the Flutter app
+        run: flutter build appbundle
+
+      # Step 8: Upload Artifacts
+      - name: Upload Artifacts
+        # Use the latest version of the release-action to upload artifacts
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk, build/app/outputs/bundle/release/app-release.aab"
+          # Tag the release with a version number and GitHub's run number
+          tag: v1.0.${{ github.run_number }}
+          # Use the token from GitHub Secrets for authentication
+          token: ${{ secrets.TOKEN }}
