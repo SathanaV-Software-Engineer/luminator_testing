@@ -10,6 +10,8 @@ on:
     branches:
       - main
       - 'release/*'
+  # Run this workflow on manual trigger
+  workflow_dispatch:
 
 # Define the name of this workflow
 name: "Build & Release"
