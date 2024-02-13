@@ -12,25 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get latest release info
-        id: get_latest_release
         uses: actions/github-script@v5
         with:
           script: |
-            try {
-              const response = await github.repos.getLatestRelease({
-                owner: 'SathanaV-Software-Engineer',
-                repo: 'luminator_testing'
-              });
+            const response = await github.rest.repos.getLatestRelease({
+              owner: 'SathanaV-Software-Engineer',
+              repo: 'luminator_testing'
+            });
 
-              console.log('Latest release:', response.data);
+            console.log('Latest release:', response.data);
 
-              // Extract the asset ID of the AAB file from the latest release
-              const assetId = response.data.assets.find(asset => asset.name === 'app-release.aab').id;
+            // Extract the asset ID of the AAB file from the latest release
+            const assetId = response.data.assets.find(asset => asset.name === 'app-release.aab').id;
 
-              console.log('Asset ID:', assetId);
+            console.log('Asset ID:', assetId);
 
-              // You can use the asset ID to download the AAB file
-              // For example, you can use curl or wget to download the file
-            } catch (error) {
-              console.error('Error:', error.message);
-            }
+            // You can use the asset ID to download the AAB file
+            // For example, you can use curl or wget to download the file
