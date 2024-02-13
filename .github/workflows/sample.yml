@@ -11,16 +11,22 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Print Trigger Information
-        run: |
-          # Extract the last segment of the ref, which corresponds to the branch or tag name
-          ref_segment=$(echo "${{ github.ref }}" | awk -F'/' '{print $NF}')
-          # Check if the ref_segment starts with 'refs/tags/'
-          if [[ "${ref_segment}" == "refs/tags/"* ]]; then
-            # If it does, then it's a tag
-            tag_name="${ref_segment#"refs/tags/"}"
-            echo "Triggered by tag: ${tag_name}"
-          else
-            # Otherwise, it's a branch
-            echo "Triggered by branch: ${ref_segment}"
-          fi
+      - name: Get latest release info
+        id: get_latest_release
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const response = await github.repos.getLatestRelease({
+              owner: 'SathanaV-Software-Engineer',
+              repo: 'luminator_testing'
+            });
+      
+            console.log('Latest release:', response.data);
+      
+            // Extract the asset ID of the AAB file from the latest release
+            const assetId = response.data.assets.find(asset => asset.name === 'app-release.aab').id;
+      
+            console.log('Asset ID:', assetId);
+      
+            // You can use the asset ID to download the AAB file
+            // For example, you can use curl or wget to download the file
