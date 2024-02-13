@@ -13,4 +13,4 @@ jobs:
 
     steps:
     - name: Print Hello
-      run: echo "Hello ${{ github.event.release.tag_name }}"
+      run: echo "Hello ${{ github.event.inputs.release_notes }}"
