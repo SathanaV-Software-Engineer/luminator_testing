@@ -40,3 +40,4 @@ jobs:
           packageName: com.mobiletesting.testapp
           releaseFiles: app-release.aab
           track: internal
+          status: draft
