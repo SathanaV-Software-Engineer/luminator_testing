@@ -18,7 +18,7 @@ jobs:
 
       - name: Check if pubspec.yaml exists
         run: |
-          if [ -f "./whatsnew/whatsnew-en-USi.txt" ]; then
+          if [ -f "./whatsnew/whatsnew-en-US.txt" ]; then
             echo "whatsnew-en-US.txt exists"
           else
             echo "whatsnew-en-US.txt does not exist"
