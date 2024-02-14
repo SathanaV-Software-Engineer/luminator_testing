@@ -11,21 +11,27 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Authenticate with Google Cloud
+      - name: Check if whatsnew-en-US.txt exists
+        id: check_whatsnew_file
         run: |
-          echo "${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" > service-account.json
-          gcloud auth activate-service-account --key-file=service-account.json
-      - name: Get Edit ID
-        id: get_edit_id
+          if [ -f "whatsnew/whatsnew-en-US.txt" ]; then
+            echo "::set-output name=whatsnew_file_exists::true"
+          else
+            echo "::set-output name=whatsnew_file_exists::false"
+          fi
+        shell: bash
+
+      - name: Throw error if whatsnew-en-US.txt does not exist
+        if: steps.check_whatsnew_file.outputs.whatsnew_file_exists == 'false'
         run: |
-          # Authenticate with Google Play Developer API
-          ACCESS_TOKEN=$(gcloud auth print-access-token)
-          
-          # Make a request to list edits for the given package name
-          RESPONSE=$(curl -X GET \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits")
-          
-          # Extract the edit ID from the response
-          EDIT_ID=$(echo "$RESPONSE" | jq -r '.edits[0].id')
-          echo "Edit ID: $EDIT_ID"
+          echo "Error: whatsnew-en-US.txt file not found"
+          exit 1
+
+      - name: Release app to internal track
+        if: steps.check_whatsnew_file.outputs.whatsnew_file_exists == 'true'
+        run: |
+          if [ -f "whatsnew/whatsnew-en-US.txt" ]; then
+            echo "present"
+          else 
+            echo "not present"
+          fi
