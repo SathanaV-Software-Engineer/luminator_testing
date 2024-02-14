@@ -31,7 +31,22 @@ jobs:
       - name: Checkout Repository
         # Use the latest version of the checkout action to fetch the repository's code
         uses: actions/checkout@v1
-
+      - name: Check if release note exists
+        run: |
+          if [ -f "./whatsnew/whatsnew-en-US.txt" ]; then
+            echo "whatsnew-en-US.txt exists"
+          else
+            echo "whatsnew-en-US.txt does not exist"
+            exit 1
+          fi
+      - name: Read release notes from file
+        id: read_release_notes
+        run: |
+          release_notes=$(cat ./whatsnew/whatsnew-en-US.txt)
+          
+          echo "::set-output name=release_notes::$release_notes"
+      - name: Checking output
+        run: echo "${{ steps.read_release_notes.outputs.release_notes }}"
       # Step 2: Set Up Java
       - name: Set Up Java
         # Use the latest version of the setup-java action to set up Java
@@ -71,11 +86,10 @@ jobs:
         # Use the latest version of the release-action to upload artifacts
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk, build/app/outputs/bundle/release/app-release.aab"
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk, build/app/outputs/bundle/release/app-release.aab, whatsnew/whatsnew-en-US.txt"
           # Tag the release with a version number and GitHub's run number
           tag: v1.0.${{ github.run_number }}
           # Use the token from GitHub Secrets for authentication
           token: ${{ secrets.TOKEN }}
-          releaseNotes: |
-           $(cat ./whatsnew/whatsnew-en-US.txt)
+          releaseNotes: ${{ steps.read_release_notes.outputs.release_notes }}
           
