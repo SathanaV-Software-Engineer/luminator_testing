@@ -8,36 +8,21 @@ on:
         required: true
 
 jobs:
-  determine_trigger_branch_or_tag:
+  debug:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Create whatsnew directory if it doesn't exist
-        run: mkdir -p whatsnew
+      - name: List files in repository
+        run: ls -R
 
       - name: Check if pubspec.yaml exists
-        id: check_whatsnew_file
         run: |
           if [ -f "pubspec.yaml" ]; then
-            echo "::set-output name=whatsnew_file_exists::true"
+            echo "pubspec.yaml exists"
           else
-            echo "::set-output name=whatsnew_file_exists::false"
+            echo "pubspec.yaml does not exist"
+            exit 1
           fi
-        shell: bash
 
-      - name: Throw error if whatsnew-en-US.txt does not exist
-        if: steps.check_whatsnew_file.outputs.whatsnew_file_exists == 'false'
-        run: |
-          echo "Error: pubspec.yaml file not found"
-          exit 1
-
-      - name: Release app to internal track
-        if: steps.check_whatsnew_file.outputs.whatsnew_file_exists == 'true'
-        run: |
-          if [ -f "whatsnew/whatsnew-en-US.txt" ]; then
-            echo "present"
-          else 
-            echo "not present"
-          fi
