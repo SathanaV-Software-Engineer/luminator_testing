@@ -11,6 +11,16 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Check if Release note exists
+        run: |
+          if [ -f "./whatsnew/whatsnew-en-US.txt" ]; then
+            echo "whatsnew-en-US.txt exists"
+          else
+            echo "whatsnew-en-US.txt does not exist"
+            exit 1
+          fi
       - name: Get latest release info
         id: latest_release
         uses: actions/github-script@v5
@@ -42,3 +52,4 @@ jobs:
           track: internal
           status: draft
           releaseStatus: completed
+          whatsNewDirectory: "./whatsnew/whatsnew-en-US.txt"
