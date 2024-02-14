@@ -11,8 +11,11 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
-      - name: List files in whatsnew directory
-        run: ls whatsnew/
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create whatsnew directory if it doesn't exist
+        run: mkdir -p whatsnew
 
       - name: Check if whatsnew-en-US.txt exists
         id: check_whatsnew_file
