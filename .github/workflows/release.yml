@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Check if Release note exists
         run: |
-          if [ -f "./whatsnew/whatsnew-en-US.txt" ]; then
-            echo "whatsnew-en-US.txt exists"
+          if [ -f "./whatsnew/whatsnew-en-US" ]; then
+            echo "whatsnew-en-US exists"
           else
-            echo "whatsnew-en-US.txt does not exist"
+            echo "whatsnew-en-US does not exist"
             exit 1
           fi
       - name: Get latest release info
