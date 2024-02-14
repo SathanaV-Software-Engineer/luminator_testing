@@ -11,6 +11,10 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
+      - name: Authenticate with Google Cloud
+        run: |
+          echo "${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" > service-account.json
+          gcloud auth activate-service-account --key-file=service-account.json
       - name: Get Edit ID
         id: get_edit_id
         run: |
