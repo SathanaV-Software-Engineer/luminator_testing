@@ -47,13 +47,8 @@ jobs:
 
       - name: Complete Release
         run: |
-          # Extract edit ID from the upload action response
+          echo "Upload response: ${{ steps.release_internal_track.outputs.response }}"
           EDIT_ID=$(echo "${{ steps.release_internal_track.outputs.response }}" | jq -r '.edit.id')
           echo "Edit ID: $EDIT_ID"
-
           # Complete the release using the Google Play Developer API
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{"status": "completed"}' \
-            "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits/$EDIT_ID:commit"
+        
