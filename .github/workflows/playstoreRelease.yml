@@ -17,10 +17,10 @@ jobs:
       - name: Create whatsnew directory if it doesn't exist
         run: mkdir -p whatsnew
 
-      - name: Check if whatsnew-en-US.txt exists
+      - name: Check if pubspec.yaml exists
         id: check_whatsnew_file
         run: |
-          if [ -f "whatsnew/whatsnew-en-US.txt" ]; then
+          if [ -f "pubspec.yaml" ]; then
             echo "::set-output name=whatsnew_file_exists::true"
           else
             echo "::set-output name=whatsnew_file_exists::false"
@@ -30,7 +30,7 @@ jobs:
       - name: Throw error if whatsnew-en-US.txt does not exist
         if: steps.check_whatsnew_file.outputs.whatsnew_file_exists == 'false'
         run: |
-          echo "Error: whatsnew-en-US.txt file not found"
+          echo "Error: pubspec.yaml file not found"
           exit 1
 
       - name: Release app to internal track
