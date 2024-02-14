@@ -11,6 +11,9 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
+      - name: List files in whatsnew directory
+        run: ls whatsnew/
+
       - name: Check if whatsnew-en-US.txt exists
         id: check_whatsnew_file
         run: |
