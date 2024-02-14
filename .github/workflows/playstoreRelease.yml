@@ -1,4 +1,4 @@
-name: Release in Play Store via another method
+name: Release in Play Store using different method
 
 on:
   workflow_dispatch:
@@ -8,28 +8,42 @@ on:
         required: true
 
 jobs:
-  determine_edit_id:
+  determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Get Bearer Token
-        run: |
-          # Parse the service account key stored in the secret
-          echo "${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" > service-account.json
-          # Use gcloud CLI to authenticate and obtain a token
-          gcloud auth activate-service-account --key-file=service-account.json
-          # Obtain the access token
-          ACCESS_TOKEN=$(gcloud auth print-access-token)
-          echo "Bearer Token: $ACCESS_TOKEN"
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: service-account.json
+      - name: Get latest release info
+        id: latest_release
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const response = await github.rest.repos.getLatestRelease({
+              owner: 'SathanaV-Software-Engineer',
+              repo: 'luminator_testing'
+            });
 
-      - name: Get Edit ID
-        id: get_edit_id
+            console.log('Latest release:', response.data);
+
+            // Extract the asset details of the AAB file from the latest release
+            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
+
+            console.log('Asset details:', assetDetails.browser_download_url);
+            
+            // Set the assetDetails as an output
+            console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
+      - name: Download release file
         run: |
-          RESPONSE=$(curl -X GET \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits?packageName=com.mobiletesting.testapp")
-          echo "API Response: $RESPONSE"
-          EDIT_ID=$(echo "$RESPONSE" | jq -r '.edits[0].id')
-          echo "Edit ID: $EDIT_ID"
+          wget -O app-release.aab "${{ steps.latest_release.outputs.assetDetails }}"
+      - name: Release app to internal track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: com.mobiletesting.testapp
+          releaseFiles: app-release.aab
+          track: internal
+          status: draft
+          releaseStatus: completed
+      - name: Publish to Google Play
+        run: |
+            # Extract the edit ID from the previous step's output
+            EDIT_ID=$(echo "${{ steps.release_to_internal_track.outputs.edit_id }}")
+            echo "Edit ID: $EDIT_ID"
