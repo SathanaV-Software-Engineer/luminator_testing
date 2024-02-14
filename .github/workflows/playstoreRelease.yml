@@ -7,34 +7,17 @@ on:
         description: 'Release Notes'
         required: true
 
+
 jobs:
-  determine_trigger_branch_or_tag:
+  determine_edit_id:
     runs-on: ubuntu-latest
     steps:
       - name: Get Edit ID
         id: get_edit_id
         run: |
-          EDIT_ID=$(curl -X GET \
+          RESPONSE=$(curl -X GET \
             -H "Authorization: Bearer ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" \
-            "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits?packageName=com.mobiletesting.testapp&token=$TOKEN" | jq -r '.edits[0].id')
+            "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits?packageName=com.mobiletesting.testapp")
+          echo "API Response: $RESPONSE"
+          EDIT_ID=$(echo "$RESPONSE" | jq -r '.edits[0].id')
           echo "Edit ID: $EDIT_ID"
-          
-      - name: Get latest release info
-        id: latest_release
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const response = await github.rest.repos.getLatestRelease({
-              owner: 'SathanaV-Software-Engineer',
-              repo: 'luminator_testing'
-            });
-
-            console.log('Latest release:', response.data);
-
-            // Extract the asset details of the AAB file from the latest release
-            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
-
-            console.log('Asset details:', assetDetails.browser_download_url);
-            
-            // Set the assetDetails as an output
-            console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
