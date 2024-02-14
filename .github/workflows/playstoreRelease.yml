@@ -11,6 +11,14 @@ jobs:
   determine_trigger_branch_or_tag:
     runs-on: ubuntu-latest
     steps:
+      - name: Get Edit ID
+        id: get_edit_id
+        run: |
+          EDIT_ID=$(curl -X GET \
+            -H "Authorization: Bearer ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" \
+            "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits?packageName=com.mobiletesting.testapp&token=$TOKEN" | jq -r '.edits[0].id')
+          echo "Edit ID: $EDIT_ID"
+          
       - name: Get latest release info
         id: latest_release
         uses: actions/github-script@v5
@@ -30,25 +38,3 @@ jobs:
             
             // Set the assetDetails as an output
             console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
-
-      - name: Download release file
-        run: |
-          wget -O app-release.aab "${{ steps.latest_release.outputs.assetDetails }}"
-
-      - name: Release app to internal track
-        id: release_internal_track
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
-          packageName: com.mobiletesting.testapp
-          releaseFiles: app-release.aab
-          track: internal
-          status: draft
-
-      - name: Complete Release
-        run: |
-          echo "Upload response: ${{ steps.release_internal_track.outputs.response }}"
-          EDIT_ID=$(echo "${{ steps.release_internal_track.outputs.response }}" | jq -r '.edit.id')
-          echo "Edit ID: $EDIT_ID"
-          # Complete the release using the Google Play Developer API
-        
