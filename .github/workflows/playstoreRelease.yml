@@ -24,6 +24,25 @@ jobs:
             echo "whatsnew-en-US.txt does not exist"
             exit 1
           fi
+      - name: Read release notes from file
+        id: read_release_notes
+        run: |
+          release_notes=$(cat ./whatsnew/whatsnew-en-US.txt)
+          
+          echo "::set-output name=release_notes::$release_notes"
       - name: List files in repository
         run: ls -R
+      - name: Checking output
+        run: echo "${{ steps.read_release_notes.outputs.release_notes }}"
+      - name: Upload Artifacts
+          # Use the latest version of the release-action to upload artifacts
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./whatsnew/whatsnew-en-US.txt"
+          # Tag the release with a version number and GitHub's run number
+          tag: v1.0.${{ github.run_number }}
+          # Use the token from GitHub Secrets for authentication
+          token: ${{ secrets.TOKEN }}
+          # Use the release notes obtained from the file
+          body: ${{ steps.read_release_notes.outputs.release_notes }}
 
