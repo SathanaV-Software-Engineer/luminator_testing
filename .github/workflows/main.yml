@@ -91,5 +91,6 @@ jobs:
           tag: v1.0.${{ github.run_number }}
           # Use the token from GitHub Secrets for authentication
           token: ${{ secrets.TOKEN }}
-          releaseNotes: ${{ steps.read_release_notes.outputs.release_notes }}
+          body: ${{ steps.read_release_notes.outputs.release_notes }}
+          bodyFile: "whatsnew/whatsnew-en-US.txt"
           
