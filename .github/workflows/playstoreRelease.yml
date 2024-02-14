@@ -7,16 +7,28 @@ on:
         description: 'Release Notes'
         required: true
 
-
 jobs:
   determine_edit_id:
     runs-on: ubuntu-latest
+    
     steps:
+      - name: Get Bearer Token
+        run: |
+          # Parse the service account key stored in the secret
+          echo "${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" > service-account.json
+          # Use gcloud CLI to authenticate and obtain a token
+          gcloud auth activate-service-account --key-file=service-account.json
+          # Obtain the access token
+          ACCESS_TOKEN=$(gcloud auth print-access-token)
+          echo "Bearer Token: $ACCESS_TOKEN"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: service-account.json
+
       - name: Get Edit ID
         id: get_edit_id
         run: |
           RESPONSE=$(curl -X GET \
-            -H "Authorization: Bearer ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
             "https://www.googleapis.com/androidpublisher/v3/applications/com.mobiletesting.testapp/edits?packageName=com.mobiletesting.testapp")
           echo "API Response: $RESPONSE"
           EDIT_ID=$(echo "$RESPONSE" | jq -r '.edits[0].id')
