@@ -1,4 +1,0 @@
-storePassword=testapp
-keyPassword=testapp
-keyAlias=upload
-storeFile=testapp.jks
