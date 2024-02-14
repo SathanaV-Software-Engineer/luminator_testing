@@ -52,4 +52,4 @@ jobs:
           track: internal
           status: draft
           releaseStatus: completed
-          whatsNewDirectory: "./whatsnew/whatsnew-en-US.txt"
+          whatsNewDirectory: whatsnew/whatsnew-en-US.txt
