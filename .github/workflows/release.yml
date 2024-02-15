@@ -47,6 +47,5 @@ jobs:
           releaseFiles: app-release.aab
           track: internal
           status: draft
-          releaseStatus: completed
           whatsNewDirectory: './whatsnew/'
  
