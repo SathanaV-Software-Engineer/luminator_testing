@@ -42,9 +42,8 @@ jobs:
       - name: Read release notes from file
         id: read_release_notes
         run: |
-          release_notes=$(cat ./whatsnew/whatsnew-en-US)
-          
-          echo "::set-output name=release_notes::$release_notes"
+          release_notes=$(cat ./whatsnew/whatsnew-en-US | base64)
+            echo "::set-output name=release_notes::$release_notes"
       - name: Checking output
         run: echo "${{ steps.read_release_notes.outputs.release_notes }}"
       # Step 2: Set Up Java
@@ -80,7 +79,7 @@ jobs:
       - name: Build App Bundle
         # Build the app bundle for the Flutter app
         run: flutter build appbundle
-
+     
       # Step 8: Upload Artifacts
       - name: Upload Artifacts
         # Use the latest version of the release-action to upload artifacts
@@ -91,6 +90,5 @@ jobs:
           tag: v1.0.${{ github.run_number }}
           # Use the token from GitHub Secrets for authentication
           token: ${{ secrets.TOKEN }}
-          body: |
-               ${{ readFile('./whatsnew/whatsnew-en-US') }}
+          body: ${{ steps.read_release_notes.outputs.release_notes | base64 -d }}
           
