@@ -8,24 +8,36 @@ on:
         required: true
 
 jobs:
-  determine_trigger_branch_or_tag:
-    runs-on: ubuntu-latest
+  # Define a job named 'build'
+  build:
+    # Give the job a name
+    name: Build & Release
+    # Specify the operating system on which the job runs
+    runs-on: macos-latest
+
+    # Define the steps to be executed in this job
     steps:
-      - name: Get latest release info
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const response = await github.rest.repos.getLatestRelease({
-              owner: 'SathanaV-Software-Engineer',
-              repo: 'luminator_testing'
-            });
-
-            console.log('Latest release hello:', response.data);
-
-            // Extract the asset ID of the AAB file from the latest release
-            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab').id;
-
-            console.log('Asset ID testing:', assetDetails);
-
-            // You can use the asset ID to download the AAB file
-            // For example, you can use curl or wget to download the file
+      # Step 1: Checkout Repository
+      - name: Checkout Repository
+        # Use the latest version of the checkout action to fetch the repository's code
+        uses: actions/checkout@v1
+      - name: Check if release note exists
+        run: |
+          if [ -f "./whatsnew/whatsnew-en-US" ]; then
+            echo "whatsnew-en-US exists"
+          else
+            echo "whatsnew-en-US does not exist"
+            exit 1
+          fi
+      - name: Read release notes from file
+        id: read_release_notes
+        run: |
+          release_notes=$(cat ./whatsnew/whatsnew-en-US)
+          printf -v formatted_notes "%s" "$release_notes"
+          echo "::set-output name=release_notes::$formatted_notes"
+      - name: Debug release notes content
+        run: |
+          cat ./whatsnew/whatsnew-en-US
+          echo "End of file."
+      - name: Checking output
+        run: echo "${{ steps.read_release_notes.outputs.release_notes }}"
