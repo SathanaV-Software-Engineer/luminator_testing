@@ -92,5 +92,5 @@ jobs:
           # Use the token from GitHub Secrets for authentication
           token: ${{ secrets.TOKEN }}
           body: |
-            $(cat ./whatsnew/whatsnew-en-US)
+               ${{ readFile('./whatsnew/whatsnew-en-US') }}
           
