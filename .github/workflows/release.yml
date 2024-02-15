@@ -2,10 +2,6 @@ name: Release in Play Store
 
 on:
   workflow_dispatch:
-    inputs:
-      release_notes:
-        description: 'Release Notes'
-        required: true
 
 jobs:
   determine_trigger_branch_or_tag:
