@@ -1,27 +1,15 @@
-name: Manual Trigger new now testing
+name: Release in Play Store app sharing
 
 on:
   workflow_dispatch:
-    inputs:
-      release_notes:
-        description: 'Release Notes'
-        required: true
 
 jobs:
-  # Define a job named 'build'
-  build:
-    # Give the job a name
-    name: Build & Release
-    # Specify the operating system on which the job runs
-    runs-on: macos-latest
-
-    # Define the steps to be executed in this job
+  determine_trigger_branch_or_tag:
+    runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout Repository
-      - name: Checkout Repository
-        # Use the latest version of the checkout action to fetch the repository's code
-        uses: actions/checkout@v1
-      - name: Check if release note exists
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Check if Release note exists
         run: |
           if [ -f "./whatsnew/whatsnew-en-US" ]; then
             echo "whatsnew-en-US exists"
@@ -29,25 +17,35 @@ jobs:
             echo "whatsnew-en-US does not exist"
             exit 1
           fi
-      - name: Read release notes from file
-        id: read_release_notes
-        run: |
-          release_notes=$(cat ./whatsnew/whatsnew-en-US)
-          printf -v formatted_notes "%s" "$release_notes"
-          echo "::set-output name=release_notes::$formatted_notes"
-      - name: Debug release notes content
-        run: |
-          cat ./whatsnew/whatsnew-en-US
-          echo "End of file."
-      - name: Checking output
-        run: echo "${{ steps.read_release_notes.outputs.release_notes }}"
-      - name: Upload Artifacts
-        # Use the latest version of the release-action to upload artifacts
-        uses: ncipollo/release-action@v1
+      - name: Get latest release info
+        id: latest_release
+        uses: actions/github-script@v5
         with:
-          artifacts: "whatsnew/whatsnew-en-US"
-          # Tag the release with a version number and GitHub's run number
-          tag: v1.0.${{ github.run_number }}
-          # Use the token from GitHub Secrets for authentication
-          token: ${{ secrets.TOKEN }}
-          body: $(cat ./whatsnew/whatsnew-en-US)
+          script: |
+            const response = await github.rest.repos.getLatestRelease({
+              owner: 'SathanaV-Software-Engineer',
+              repo: 'luminator_testing'
+            });
+
+            console.log('Latest release:', response.data);
+
+            // Extract the asset details of the AAB file from the latest release
+            const assetDetails = response.data.assets.find(asset => asset.name === 'app-release.aab');
+
+            console.log('Asset details:', assetDetails.browser_download_url);
+            
+            // Set the assetDetails as an output
+            console.log(`::set-output name=assetDetails::${assetDetails.browser_download_url}`);
+      - name: Download release file
+        run: |
+          wget -O app-release.aab "${{ steps.latest_release.outputs.assetDetails }}"
+
+      - name: Uploading to IAS
+        id: ias
+        uses: sagar-viradiya/internal-app-sharing-action@v1.1.0
+        with:
+          # Your service account JSON GitHub secret
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          # Your package name
+          packageName: com.mobiletesting.testapp
+          aabFilePath: 'app-release.aab'
