@@ -50,4 +50,4 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           # Your package name
           packageName: com.mobiletesting.testapp
-          aabFilePath: 'app-release.aab'
+          aabFilePath: app-release.aab
